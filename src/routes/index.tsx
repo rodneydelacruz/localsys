@@ -1,0 +1,40 @@
+import { Routes, Route } from 'react-router'
+import Layout from '@/components/Layout'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
+import LoginPage from '@/auth/LoginPage'
+import Dashboard from '@/pages/Dashboard'
+import { RecordsPage } from '@/features/records'
+import { SystemSettings } from '@/features/settings'
+
+export default function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route
+          path="records"
+          element={
+            <ProtectedRoute roles={['admin', 'staff', 'viewer']}>
+              <RecordsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute roles={['admin']}>
+              <SystemSettings />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
+  )
+}
