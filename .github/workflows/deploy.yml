@@ -9,17 +9,11 @@ jobs:
     runs-on: [self-hosted, windows]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build for production
-        run: npm run build -- --mode production
-
-      - name: Copy to pb_public
-        run: Copy-Item -Path "dist\*" -Destination "pb_public\" -Recurse -Force
-
-      - name: Restart PocketBase
-        run: Restart-Service -Name PocketBase -Force
+      - name: Pull & build in project directory
+        run: |
+          cd D:\BARANGAYCC\barangay-system
+          git pull origin main
+          npm ci
+          npm run build -- --mode production
+          Copy-Item -Path "dist\*" -Destination "pb_public\" -Recurse -Force
+          Restart-Service -Name PocketBase -Force
