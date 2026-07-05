@@ -74,14 +74,14 @@ export default function Dashboard() {
           <Card className="motion-fade-in motion-slide-up">
             <CardContent className="p-5">
               <h2 className="text-sm font-semibold text-foreground">Quick Actions</h2>
-              <div className="mt-3 space-y-2">
-                <Link to="/records">
+              <div className="mt-3 flex flex-col gap-2">
+                <Link to="/records" className="block">
                   <Button variant="default" size="sm" className="w-full justify-start gap-2 motion-press">
                     <FileText className="size-4" />
                     New Record
                   </Button>
                 </Link>
-                <Link to="/records">
+                <Link to="/records" className="block">
                   <Button variant="outline" size="sm" className="w-full justify-start gap-2 motion-press">
                     View All Records
                   </Button>

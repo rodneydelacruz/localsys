@@ -290,7 +290,7 @@ export default function SystemSettings() {
               <SettingsField label="Barangay Name" value={barangayName} onChange={onChange(setBarangayName)} required />
               <SettingsField label="Municipality / City" value={municipalityCity} onChange={onChange(setMunicipalityCity)} required />
             </div>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <SettingsField label="Province" value={province} onChange={onChange(setProvince)} placeholder="e.g. Capiz" />
               <SettingsField label="Region" value={region} onChange={onChange(setRegion)} placeholder="e.g. VI" />
               <SettingsField label="Postal Code" value={postalCode} onChange={onChange(setPostalCode)} placeholder="e.g. 5800" />
@@ -306,11 +306,11 @@ export default function SystemSettings() {
               Barangay Officials
             </h2>
           </div>
-          <div className="grid grid-cols-3 gap-3 p-3">
-            <SettingsField label="Barangay Captain" value={barangayCaptain} onChange={onChange(setBarangayCaptain)} placeholder="Full name" />
-            <SettingsField label="Barangay Secretary" value={barangaySecretary} onChange={onChange(setBarangaySecretary)} placeholder="Full name" />
-            <SettingsField label="Barangay Treasurer" value={barangayTreasurer} onChange={onChange(setBarangayTreasurer)} placeholder="Full name" />
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3">
+              <SettingsField label="Barangay Captain" value={barangayCaptain} onChange={onChange(setBarangayCaptain)} placeholder="Full name" />
+              <SettingsField label="Barangay Secretary" value={barangaySecretary} onChange={onChange(setBarangaySecretary)} placeholder="Full name" />
+              <SettingsField label="Barangay Treasurer" value={barangayTreasurer} onChange={onChange(setBarangayTreasurer)} placeholder="Full name" />
+            </div>
         </section>
 
         <section className="rounded-lg border bg-card shadow-sm motion-fade-in motion-slide-up" style={{ animationDelay: '150ms' }}>

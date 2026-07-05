@@ -232,11 +232,11 @@ export default function RecordsPage() {
         </CardContent>
       </Card>
 
-      {/* Slide-over panel */}
+      {/* Slide-over panel / bottom drawer */}
       {panelOpen && (
-        <div className="fixed inset-0 z-40 flex justify-end">
+        <div className="fixed inset-0 z-40 flex max-md:flex-col max-md:justify-end md:justify-end">
           <div className="fixed inset-0 bg-black/40 motion-fade-in" onClick={closePanel} aria-hidden="true" />
-          <div className="relative w-full max-w-md bg-card border-l border-border shadow-xl motion-slide-up motion-fade-in overflow-y-auto">
+          <div className="relative w-full bg-card shadow-xl motion-slide-up motion-fade-in overflow-y-auto md:max-w-md md:border-l md:border-border max-md:max-h-[85vh] max-md:rounded-t-2xl">
             <div className="flex items-center justify-between border-b px-5 py-4">
               <h2 className="text-sm font-semibold text-foreground">{editingId ? 'Edit Record' : 'New Record'}</h2>
               <button

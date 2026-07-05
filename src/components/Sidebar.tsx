@@ -6,7 +6,6 @@ import {
   Settings,
   PanelRightClose,
   PanelRightOpen,
-  Menu,
   LogOut,
 } from 'lucide-react'
 import { getCurrentUser, logout, type Role } from '@/auth/session'
@@ -52,10 +51,11 @@ function ActiveDot() {
 interface SidebarProps {
   pinned: boolean
   onTogglePin: () => void
+  mobileOpen: boolean
+  onMobileOpenChange: (open: boolean) => void
 }
 
-export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+export default function Sidebar({ pinned, onTogglePin, mobileOpen, onMobileOpenChange }: SidebarProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -63,7 +63,7 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
   const { theme } = useTheme()
 
   useEffect(() => {
-    setMobileOpen(false)
+    onMobileOpenChange(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -91,21 +91,12 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
 
   return (
     <>
-      <button
-        type="button"
-        className="fixed top-3 left-3 z-50 flex size-9 items-center justify-center rounded-md bg-background text-muted-foreground shadow-sm ring-1 ring-border hover:text-foreground md:hidden"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open sidebar"
-      >
-        <Menu className="size-4" />
-      </button>
-
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex flex-col border-r bg-background transition-all duration-200',
+          'z-40 flex flex-col border-r bg-background transition-all duration-200',
           pinned ? 'w-60' : 'w-16',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full',
-          'md:translate-x-0',
+          mobileOpen ? 'fixed inset-y-0 left-0 translate-x-0' : 'fixed inset-y-0 left-0 -translate-x-full',
+          'md:relative md:inset-auto md:translate-x-0',
         )}
       >
         <div className={cn(
@@ -237,7 +228,7 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 motion-fade-in md:hidden"
-          onClick={() => setMobileOpen(false)}
+          onClick={() => onMobileOpenChange(false)}
           aria-hidden="true"
         />
       )}
