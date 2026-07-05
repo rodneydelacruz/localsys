@@ -53,7 +53,7 @@ export async function getResidents(params?: { household_id?: string }): Promise<
   try {
     const query: Record<string, unknown> = { sort: '-updated' }
     if (params?.household_id) {
-      query.filter = `household_id = '${params.household_id}'`
+      query.filter = `household_id = '${params.household_id.trim()}'`
     }
     return await getClient().collection(COLLECTION).getFullList<ApiResident>(query)
   } catch (err) {

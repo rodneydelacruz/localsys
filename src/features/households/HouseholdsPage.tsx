@@ -53,6 +53,7 @@ export default function HouseholdsPage() {
   const [residentsMap, setResidentsMap] = useState<Map<string, ApiResident[]>>(new Map())
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [purokFilter, setPurokFilter] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm())
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -78,7 +79,7 @@ export default function HouseholdsPage() {
         }
         setResidentsMap(map)
       })
-      .catch(console.error)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load households'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -156,14 +157,19 @@ export default function HouseholdsPage() {
   const canModify = hasRole('admin', 'staff')
 
   const filteredHouseholds = useMemo(() => {
-    if (!search) return households
-    const q = search.toLowerCase()
-    return households.filter((h) =>
-      h.household_number.toLowerCase().includes(q) ||
-      h.head_name.toLowerCase().includes(q) ||
-      (h.purok && h.purok.toLowerCase().includes(q)),
-    )
-  }, [households, search])
+    return households.filter((h) => {
+      if (search) {
+        const q = search.toLowerCase()
+        if (
+          !h.household_number.toLowerCase().includes(q) &&
+          !h.head_name.toLowerCase().includes(q) &&
+          !(h.purok && h.purok.toLowerCase().includes(q))
+        ) return false
+      }
+      if (purokFilter && h.purok !== purokFilter) return false
+      return true
+    })
+  }, [households, search, purokFilter])
 
   return (
     <>
@@ -183,6 +189,16 @@ export default function HouseholdsPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="h-9 w-80 max-w-full text-sm"
         />
+        <Select
+          value={purokFilter}
+          onValueChange={(v) => setPurokFilter(v)}
+          className="h-9 w-40 text-sm"
+        >
+          <option value="">All Puroks</option>
+          {purokOptions.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </Select>
       </div>
 
       <Card>
@@ -202,7 +218,7 @@ export default function HouseholdsPage() {
             </div>
           ) : households.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
-              <p className="text-sm text-muted-foreground">No households found.</p>
+              <p className="text-sm text-muted-foreground">No households yet.</p>
               {canModify && (
                 <Button variant="outline" size="sm" className="mt-3 gap-1.5" onClick={openCreatePanel}>
                   <Plus className="size-3.5" />

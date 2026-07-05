@@ -1,24 +1,14 @@
-# Task 6 Report: Records Page Redesign
+# Task 6: Sidebar Navigation — Report
 
-## Status
-✅ Complete
+## Steps Completed
 
-## Commits
-- `feat(records): table layout, slide-over panel, status dots, skeleton loading`
+1. **Added imports**: Added `Users` and `Home` to the `lucide-react` import in `src/components/Sidebar.tsx`
+2. **Added nav groups**: Inserted the `Residents` nav group (Resident Profiles, Households) between Overview and Records in `navGroups`
+3. **Build verification**: `npm run build` passes (tsc + vite build)
+4. **Committed** with message: `"Add Resident Profiles and Households sidebar navigation"`
 
-## Build
-- `npm run build` passed (tsc + vite, 0 errors)
+## Result
 
-## Changes
-- Replaced card-list layout with `<table>` and staggered row entries
-- Added slide-over panel (form slides in from right) for create/edit instead of inline form
-- Added skeleton loading placeholders (3 animated rows) during fetch
-- Added empty state with "Create first record" CTA for authorized roles
-- Status now renders as pill badges with Lucide icons (Clock, CheckCircle2, XCircle) and color-coded backgrounds
-- Date column added (hidden on mobile)
-- Actions use icon-only ghost buttons (Pencil, Trash2)
-- Removed inline form Card, added `cn` import, `lucide-react` icons, and `panelOpen`/`loading` state
-
-## Concerns
-- `Select` component usage — confirms `<option>` children work with the custom `Select` component (consistent with prior pattern)
-- Slide-over uses fixed positioning with z-40 overlay per shadcn convention
+- **Status**: DONE
+- **Commits**: `43255ff` on `dark-mode-redesign`
+- **Build**: ✅ Passes

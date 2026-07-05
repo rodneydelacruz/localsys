@@ -50,7 +50,7 @@ function emptyForm() {
     purok: '',
     civil_status: '',
     occupation: '',
-    nationality: '',
+    nationality: 'Filipino',
     is_voter: false,
     is_4ps: false,
     is_senior: false,
@@ -76,7 +76,7 @@ export default function ResidentsPage() {
   useEffect(() => {
     getResidents()
       .then(setResidents)
-      .catch(console.error)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load residents'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -254,7 +254,7 @@ export default function ResidentsPage() {
             </div>
           ) : residents.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
-              <p className="text-sm text-muted-foreground">No residents found.</p>
+              <p className="text-sm text-muted-foreground">No residents yet. Add your first resident.</p>
               {canModify && (
                 <Button variant="outline" size="sm" className="mt-3 gap-1.5" onClick={openCreatePanel}>
                   <Plus className="size-3.5" />
@@ -380,7 +380,15 @@ export default function ResidentsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="panel-suffix">Suffix</Label>
-                  <Input id="panel-suffix" value={form.suffix} onChange={(e) => updateField('suffix', e.target.value)} />
+                  <Select id="panel-suffix" value={form.suffix} onValueChange={(v) => updateField('suffix', v)}>
+                    <option value="">Select suffix</option>
+                    <option value="—">—</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </Select>
                 </div>
               </div>
 
@@ -400,8 +408,8 @@ export default function ResidentsPage() {
                   <Label htmlFor="panel-gender">Gender</Label>
                   <Select id="panel-gender" value={form.gender} onValueChange={(v) => updateField('gender', v)}>
                     <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
                   </Select>
                 </div>
                 <div className="space-y-2">
@@ -424,11 +432,10 @@ export default function ResidentsPage() {
                   <Label htmlFor="panel-civil-status">Civil Status</Label>
                   <Select id="panel-civil-status" value={form.civil_status} onValueChange={(v) => updateField('civil_status', v)}>
                     <option value="">Select status</option>
-                    <option value="Single">Single</option>
-                    <option value="Married">Married</option>
-                    <option value="Widowed">Widowed</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Separated">Separated</option>
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                    <option value="widowed">Widowed</option>
+                    <option value="separated">Separated</option>
                   </Select>
                 </div>
               </div>
@@ -453,6 +460,7 @@ export default function ResidentsPage() {
                   <Label htmlFor="panel-blood-type">Blood Type</Label>
                   <Select id="panel-blood-type" value={form.blood_type} onValueChange={(v) => updateField('blood_type', v)}>
                     <option value="">Select type</option>
+                    <option value="—">—</option>
                     <option value="A+">A+</option>
                     <option value="A-">A-</option>
                     <option value="B+">B+</option>
