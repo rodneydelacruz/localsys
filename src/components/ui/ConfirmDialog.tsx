@@ -59,7 +59,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm motion-fade-in"
         onClick={onCancel}
         aria-hidden="true"
       />
@@ -69,7 +69,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'relative w-full max-w-sm animate-scale-in rounded-lg border bg-card shadow-lg',
+          'relative w-full max-w-sm motion-scale-in rounded-lg border bg-card shadow-lg',
           destructive ? 'border-red-pinoy/20' : 'border-gold/20',
         )}
       >

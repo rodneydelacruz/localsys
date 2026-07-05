@@ -8,7 +8,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
   return (
-    <div className="mb-6 animate-fade-in">
+    <div className="mb-6 motion-fade-in">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="mt-1 w-1 h-8 shrink-0 rounded-full bg-gold" aria-hidden="true" />
