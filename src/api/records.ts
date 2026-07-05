@@ -60,3 +60,18 @@ export async function deleteRecord(id: string): Promise<boolean> {
     throw handleApiError(err)
   }
 }
+
+export async function getRecordsSummary(): Promise<{ total: number; pending: number; approved: number; rejected: number }> {
+  try {
+    const client = getClient()
+    const all = await client.collection(COLLECTION).getFullList<ApiRecord>({ requestKey: 'records-summary' })
+    return {
+      total: all.length,
+      pending: all.filter((r) => r.status === 'pending').length,
+      approved: all.filter((r) => r.status === 'approved').length,
+      rejected: all.filter((r) => r.status === 'rejected').length,
+    }
+  } catch {
+    return { total: 0, pending: 0, approved: 0, rejected: 0 }
+  }
+}
