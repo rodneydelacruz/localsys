@@ -1,6 +1,7 @@
 import type { RecordModel } from 'pocketbase'
 import { getClient } from './client'
 import { handleApiError } from './errorHandler'
+import { logActivity } from './activity'
 
 const COLLECTION = 'residents'
 
@@ -71,7 +72,9 @@ export async function getResident(id: string): Promise<ApiResident> {
 
 export async function createResident(data: ResidentData): Promise<ApiResident> {
   try {
-    return await getClient().collection(COLLECTION).create<ApiResident>(data)
+    const result = await getClient().collection(COLLECTION).create<ApiResident>(data)
+    logActivity('create', COLLECTION, result.id, `Created resident: ${result.first_name} ${result.last_name}`)
+    return result
   } catch (err) {
     throw handleApiError(err)
   }
@@ -79,7 +82,9 @@ export async function createResident(data: ResidentData): Promise<ApiResident> {
 
 export async function updateResident(id: string, data: Partial<ResidentData>): Promise<ApiResident> {
   try {
-    return await getClient().collection(COLLECTION).update<ApiResident>(id, data)
+    const result = await getClient().collection(COLLECTION).update<ApiResident>(id, data)
+    logActivity('update', COLLECTION, id, `Updated resident: ${result.first_name} ${result.last_name}`)
+    return result
   } catch (err) {
     throw handleApiError(err)
   }
@@ -88,6 +93,7 @@ export async function updateResident(id: string, data: Partial<ResidentData>): P
 export async function deleteResident(id: string): Promise<boolean> {
   try {
     await getClient().collection(COLLECTION).delete(id)
+    logActivity('delete', COLLECTION, id, `Deleted resident`)
     return true
   } catch (err) {
     throw handleApiError(err)
