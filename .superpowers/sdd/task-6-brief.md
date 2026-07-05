@@ -1,5 +1,15 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Clock, CheckCircle2, XCircle } from 'lucide-react'
+### Task 6: Records Page Redesign
+
+**Files:**
+- Modify: `src/features/records/RecordsPage.tsx` (full replace)
+
+- [ ] **Step 1: Replace RecordsPage.tsx with the redesigned version**
+
+Replace the entire `src/features/records/RecordsPage.tsx`:
+
+```tsx
+import { useState, useEffect } from 'react'
+import { Plus, Pencil, Trash2, ChevronDown, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import { getRecords, createRecord, updateRecord, deleteRecord, type ApiRecord } from '@/api/records'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -25,9 +35,6 @@ export default function RecordsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [panelOpen, setPanelOpen] = useState(false)
-  const [sortBy, setSortBy] = useState<'title' | 'status' | 'updated'>('updated')
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     getRecords()
@@ -55,12 +62,11 @@ export default function RecordsPage() {
       setEditingId(null)
       setPanelOpen(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save record')
+      console.error(err)
     }
   }
 
   function openCreatePanel() {
-    setError(null)
     setEditingId(null)
     setTitle('')
     setStatus('pending')
@@ -72,7 +78,6 @@ export default function RecordsPage() {
     setTitle(record.title)
     setStatus(record.status)
     setPanelOpen(true)
-    setError(null)
   }
 
   async function handleDelete(id: string) {
@@ -85,37 +90,17 @@ export default function RecordsPage() {
       await deleteRecord(deletingId)
       setRecords((prev) => prev.filter((r) => r.id !== deletingId))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete record')
+      console.error(err)
     } finally {
       setDeletingId(null)
     }
   }
-
-  function handleSort(field: 'title' | 'status' | 'updated') {
-    if (sortBy === field) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
-    } else {
-      setSortBy(field)
-      setSortDir('asc')
-    }
-  }
-
-  const sortedRecords = useMemo(() => {
-    return [...records].sort((a, b) => {
-      let cmp = 0
-      if (sortBy === 'title') cmp = a.title.localeCompare(b.title)
-      else if (sortBy === 'status') cmp = a.status.localeCompare(b.status)
-      else cmp = new Date(a.updated).getTime() - new Date(b.updated).getTime()
-      return sortDir === 'asc' ? cmp : -cmp
-    })
-  }, [records, sortBy, sortDir])
 
   function closePanel() {
     setPanelOpen(false)
     setEditingId(null)
     setTitle('')
     setStatus('pending')
-    setError(null)
   }
 
   return (
@@ -133,7 +118,7 @@ export default function RecordsPage() {
         <CardHeader>
           <CardTitle>Records</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 sm:p-0">
           {loading ? (
             <div className="space-y-2 p-4 sm:p-6">
               {[1, 2, 3].map((i) => (
@@ -156,38 +141,23 @@ export default function RecordsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full motion-stagger-50">
                 <thead>
                   <tr className="border-b text-left text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
-                    <th className="px-4 py-3 sm:px-6 cursor-pointer select-none" onClick={() => handleSort('title')}>
-                      <span className="inline-flex items-center gap-1">
-                        Title
-                        {sortBy === 'title' && (sortDir === 'asc' ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />)}
-                      </span>
-                    </th>
-                    <th className="px-4 py-3 sm:px-6 cursor-pointer select-none" onClick={() => handleSort('status')}>
-                      <span className="inline-flex items-center gap-1">
-                        Status
-                        {sortBy === 'status' && (sortDir === 'asc' ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />)}
-                      </span>
-                    </th>
-                    <th className="hidden px-4 py-3 sm:table-cell sm:px-6 cursor-pointer select-none" onClick={() => handleSort('updated')}>
-                      <span className="inline-flex items-center gap-1">
-                        Date
-                        {sortBy === 'updated' && (sortDir === 'asc' ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />)}
-                      </span>
-                    </th>
+                    <th className="px-4 py-3 sm:px-6">Title</th>
+                    <th className="px-4 py-3 sm:px-6">Status</th>
+                    <th className="hidden px-4 py-3 sm:table-cell sm:px-6">Date</th>
                     <th className="px-4 py-3 sm:px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedRecords.map((record, i) => {
+                  {records.map((record, i) => {
                     const cfg = statusConfig[record.status]
                     const StatusIcon = cfg.icon
                     return (
                       <tr
                         key={record.id}
-                        className="border-b last:border-b-0 even:bg-muted/20 motion-fade-in motion-slide-up"
+                        className="border-b last:border-b-0 motion-fade-in motion-slide-up"
                         style={{ ['--stagger-index' as string]: i }}
                       >
                         <td className="px-4 py-3 sm:px-6 text-sm font-medium text-foreground">{record.title}</td>
@@ -249,11 +219,6 @@ export default function RecordsPage() {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-5 p-5">
-              {error && (
-                <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                  {error}
-                </div>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="panel-title">Title</Label>
                 <Input id="panel-title" value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus />
@@ -291,3 +256,13 @@ export default function RecordsPage() {
     </>
   )
 }
+```
+
+**Verification:** Navigate to `/records`. Table renders with staggered row entry. "New Record" button opens slide-over panel. Empty state shows CTA. Skeleton loading on mount. Status badges have dot icons. Build with `npm run build`.
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/features/records/RecordsPage.tsx
+git commit -m "feat(records): table layout, slide-over panel, status dots, skeleton loading"
+```

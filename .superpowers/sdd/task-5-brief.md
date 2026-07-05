@@ -1,18 +1,43 @@
+### Task 5: Dashboard Implementation
+
+**Files:**
+- Modify: `src/api/records.ts` (add helper function)
+- Modify: `src/pages/Dashboard.tsx` (full replace)
+
+- [ ] **Step 1: Add `getRecordsSummary` to API helper**
+
+Add the following function to `src/api/records.ts` (at the end of the file):
+
+```typescript
+export async function getRecordsSummary(): Promise<{ total: number; pending: number; approved: number; rejected: number }> {
+  try {
+    const client = getClient()
+    const all = await client.collection(COLLECTION).getFullList<ApiRecord>({ requestKey: 'records-summary' })
+    return {
+      total: all.length,
+      pending: all.filter((r) => r.status === 'pending').length,
+      approved: all.filter((r) => r.status === 'approved').length,
+      rejected: all.filter((r) => r.status === 'rejected').length,
+    }
+  } catch {
+    return { total: 0, pending: 0, approved: 0, rejected: 0 }
+  }
+}
+```
+
+- [ ] **Step 2: Replace Dashboard.tsx with full implementation**
+
+Replace the entire `src/pages/Dashboard.tsx`:
+
+```tsx
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { FileText, Clock, CheckCircle2, XCircle } from 'lucide-react'
-import { getRecords, getRecordsSummary } from '@/api/records'
-import type { ApiRecord } from '@/api/records'
+import { getRecordsSummary } from '@/api/records'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-
-const statusConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
-  pending:   { label: 'Pending',   icon: Clock,        color: 'text-amber-500',  bg: 'bg-amber-50 dark:bg-amber-500/10' },
-  approved:  { label: 'Approved',  icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
-  rejected:  { label: 'Rejected',  icon: XCircle,      color: 'text-red-pinoy',   bg: 'bg-red-50 dark:bg-red-500/10' },
-}
 
 interface Stat {
   label: string
@@ -24,15 +49,9 @@ interface Stat {
 export default function Dashboard() {
   const [stats, setStats] = useState<{ total: number; pending: number; approved: number; rejected: number } | null>(null)
   const [loading, setLoading] = useState(true)
-  const [recentRecords, setRecentRecords] = useState<ApiRecord[]>([])
 
   useEffect(() => {
-    getRecordsSummary().then(setStats).catch((err) => {
-      console.error(err)
-      setStats({ total: 0, pending: 0, approved: 0, rejected: 0 })
-    }).finally(() => setLoading(false))
-
-    getRecords().then((all) => setRecentRecords(all.slice(0, 5))).catch(console.error)
+    getRecordsSummary().then(setStats).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   const statCards: Stat[] = [
@@ -93,33 +112,9 @@ export default function Dashboard() {
           <Card className="motion-fade-in motion-slide-up" style={{ animationDelay: '100ms' }}>
             <CardContent className="p-5">
               <h2 className="text-sm font-semibold text-foreground">Recent Activity</h2>
-              {recentRecords.length === 0 ? (
-                <p className="mt-6 text-center text-sm text-muted-foreground/60">
-                  Select a module from the navigation to get started.
-                </p>
-              ) : (
-                <ul className="mt-3 space-y-2">
-                  {recentRecords.map((record) => {
-                    const cfg = statusConfig[record.status]
-                    const StatusIcon = cfg.icon
-                    return (
-                      <li key={record.id} className="flex items-start gap-3 text-sm">
-                        <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium text-foreground">{record.title}</p>
-                          <div className="mt-0.5 flex items-center gap-2">
-                            <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium', cfg.bg, cfg.color)}>
-                              <StatusIcon className="size-2.5" />
-                              {cfg.label}
-                            </span>
-                            <span className="text-xs text-muted-foreground">{new Date(record.updated).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
+              <p className="mt-6 text-center text-sm text-muted-foreground/60">
+                Select a module from the navigation to get started.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -127,3 +122,13 @@ export default function Dashboard() {
     </>
   )
 }
+```
+
+**Verification:** Navigate to `/`. Four stat cards visible with gold top border. Staggered animation. Skeleton loading on mount. Quick actions link to records page.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/pages/Dashboard.tsx src/api/records.ts
+git commit -m "feat(dashboard): stat cards, skeleton loading, staggered entry, quick actions"
+```
