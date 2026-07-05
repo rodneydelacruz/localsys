@@ -140,6 +140,8 @@ jobs:
           Write-Host "Pulling latest code..."
           Set-Location -LiteralPath $ProjectRoot
           git pull origin main
+          Write-Host "Cleaning node_modules to avoid file lock issues..."
+          Remove-Item -LiteralPath "$ProjectRoot\node_modules" -Recurse -Force -ErrorAction SilentlyContinue
           Write-Host "Installing dependencies..."
           npm ci
           Write-Host "Copying built artifacts to pb_public..."
