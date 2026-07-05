@@ -1,90 +1,79 @@
-### Task 2: API Layer — Residents & Households
+### Task 2: Activity logging utility + auto-logging integration
 
 **Files:**
-- Create: `src/api/residents.ts`
-- Create: `src/api/households.ts`
+- Create: `src/api/activity.ts`
+- Modify: `src/api/residents.ts`, `src/api/households.ts`, `src/api/documents.ts`
 
 **Interfaces:**
-- Consumes: `getClient()` from `src/api/client.ts`, `handleApiError()` from `src/api/errorHandler.ts`
-- Produces: `ApiResident`, `ApiHousehold` types and CRUD functions used by Task 3/4 pages.
+- Consumes: `getClient()` from `@/api/client`
+- Produces: `logActivity(action, collection, recordId, details)` — called after every create/update/delete across all API files
 
-- [ ] **Step 1: Create `src/api/residents.ts`**
+- [ ] **Step 1: Create `src/api/activity.ts`**
 
 ```typescript
-import type { RecordModel } from 'pocketbase'
 import { getClient } from './client'
 import { handleApiError } from './errorHandler'
+import type { RecordModel } from 'pocketbase'
 
-const COLLECTION = 'residents'
-
-export interface ResidentData {
-  first_name: string
-  last_name: string
-  middle_name?: string
-  suffix?: string
-  birth_date?: string
-  age?: number
-  gender?: string
-  contact_number?: string
-  household_id?: string
-  purok?: string
-  civil_status?: string
-  occupation?: string
-  nationality?: string
-  is_voter?: boolean
-  is_4ps?: boolean
-  is_senior?: boolean
-  is_pwd?: boolean
-  blood_type?: string
-  notes?: string
+export interface ApiActivity extends RecordModel {
+  action: string
+  collection: string
+  record_id: string
+  details: string
+  user_name: string
+  created: string
 }
 
-export interface ApiResident extends RecordModel {
-  first_name: string
-  last_name: string
-  middle_name: string
-  suffix: string
-  birth_date: string
-  age: number
-  gender: string
-  contact_number: string
-  household_id: string
-  purok: string
-  civil_status: string
-  occupation: string
-  nationality: string
-  is_voter: boolean
-  is_4ps: boolean
-  is_senior: boolean
-  is_pwd: boolean
-  blood_type: string
-  notes: string
-  updated: string
-}
-
-export async function getResidents(params?: { household_id?: string }): Promise<ApiResident[]> {
+export async function logActivity(
+  action: 'create' | 'update' | 'delete',
+  collection: string,
+  recordId: string,
+  details: string,
+): Promise<void> {
   try {
-    const query: Record<string, unknown> = { sort: '-updated' }
-    if (params?.household_id) {
-      query.filter = `household_id = '${params.household_id}'`
+    const user = getClient().authStore.model as { name?: string; email?: string } | null
+    await getClient().collection('activity_logs').create({
+      action,
+      collection,
+      record_id: recordId,
+      details,
+      user_name: user?.name ?? user?.email ?? 'System',
+    })
+  } catch {
+    // Silently fail — logging never breaks main operations
+  }
+}
+
+export async function getActivities(
+  page = 1,
+  perPage = 25,
+  sort = '-created',
+): Promise<{ items: ApiActivity[]; totalItems: number; totalPages: number }> {
+  try {
+    const result = await getClient().collection('activity_logs').getList<ApiActivity>(page, perPage, { sort })
+    return {
+      items: result.items,
+      totalItems: result.totalItems,
+      totalPages: result.totalPages,
     }
-    return await getClient().collection(COLLECTION).getFullList<ApiResident>(query)
   } catch (err) {
     throw handleApiError(err)
   }
 }
+```
 
-export async function getResident(id: string): Promise<ApiResident> {
-  try {
-    return await getClient().collection(COLLECTION).getOne<ApiResident>(id)
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
+- [ ] **Step 2: Add logging to `src/api/residents.ts`**
+
+Add import and calls after each successful create/update/delete:
+
+```typescript
+import { logActivity } from './activity'
 
 export async function createResident(data: ResidentData): Promise<ApiResident> {
   try {
-    return await getClient().collection(COLLECTION).create<ApiResident>(data)
+    const result = await getClient().collection(COLLECTION).create<ApiResident>(data)
+    logActivity('create', COLLECTION, result.id, `Created resident: ${result.first_name} ${result.last_name}`)
+    return result
   } catch (err) {
     throw handleApiError(err)
   }
@@ -92,7 +81,9 @@ export async function createResident(data: ResidentData): Promise<ApiResident> {
 
 export async function updateResident(id: string, data: Partial<ResidentData>): Promise<ApiResident> {
   try {
-    return await getClient().collection(COLLECTION).update<ApiResident>(id, data)
+    const result = await getClient().collection(COLLECTION).update<ApiResident>(id, data)
+    logActivity('update', COLLECTION, id, `Updated resident: ${result.first_name} ${result.last_name}`)
+    return result
   } catch (err) {
     throw handleApiError(err)
   }
@@ -101,88 +92,7 @@ export async function updateResident(id: string, data: Partial<ResidentData>): P
 export async function deleteResident(id: string): Promise<boolean> {
   try {
     await getClient().collection(COLLECTION).delete(id)
-    return true
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
-
-export async function getResidentsSummary(): Promise<{ total: number; voters: number; seniors: number; pwd: number }> {
-  try {
-    const all = await getClient().collection(COLLECTION).getFullList<ApiResident>({ requestKey: 'residents-summary' })
-    return {
-      total: all.length,
-      voters: all.filter((r) => r.is_voter).length,
-      seniors: all.filter((r) => r.is_senior).length,
-      pwd: all.filter((r) => r.is_pwd).length,
-    }
-  } catch {
-    return { total: 0, voters: 0, seniors: 0, pwd: 0 }
-  }
-}
-```
-
-- [ ] **Step 2: Create `src/api/households.ts`**
-
-```typescript
-import type { RecordModel } from 'pocketbase'
-import { getClient } from './client'
-import { handleApiError } from './errorHandler'
-
-const COLLECTION = 'households'
-
-export interface HouseholdData {
-  household_number: string
-  purok?: string
-  head_name: string
-  address?: string
-  notes?: string
-}
-
-export interface ApiHousehold extends RecordModel {
-  household_number: string
-  purok: string
-  head_name: string
-  address: string
-  notes: string
-  updated: string
-}
-
-export async function getHouseholds(): Promise<ApiHousehold[]> {
-  try {
-    return await getClient().collection(COLLECTION).getFullList<ApiHousehold>({ sort: 'household_number' })
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
-
-export async function getHousehold(id: string): Promise<ApiHousehold> {
-  try {
-    return await getClient().collection(COLLECTION).getOne<ApiHousehold>(id)
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
-
-export async function createHousehold(data: HouseholdData): Promise<ApiHousehold> {
-  try {
-    return await getClient().collection(COLLECTION).create<ApiHousehold>(data)
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
-
-export async function updateHousehold(id: string, data: Partial<HouseholdData>): Promise<ApiHousehold> {
-  try {
-    return await getClient().collection(COLLECTION).update<ApiHousehold>(id, data)
-  } catch (err) {
-    throw handleApiError(err)
-  }
-}
-
-export async function deleteHousehold(id: string): Promise<boolean> {
-  try {
-    await getClient().collection(COLLECTION).delete(id)
+    logActivity('delete', COLLECTION, id, `Deleted resident`)
     return true
   } catch (err) {
     throw handleApiError(err)
@@ -190,6 +100,13 @@ export async function deleteHousehold(id: string): Promise<boolean> {
 }
 ```
 
-- [ ] **Step 3: Verify build passes**
+- [ ] **Step 3: Add logging to `src/api/households.ts`**
 
-Run: `npm run build 2>&1` — Expect clean output.
+Add import and calls — same pattern as residents. Log messages use `result.household_number` for create/update, static for delete.
+
+- [ ] **Step 4: Add logging to `src/api/documents.ts`**
+
+Add import and calls — same pattern. Log messages use queue_number.
+
+---
+

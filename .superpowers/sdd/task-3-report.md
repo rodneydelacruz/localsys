@@ -1,25 +1,55 @@
-# Task 3 Report: Residents Page
+# Task 3 Report: Blotter API + Page Rewrite
 
-## Status
-**DONE**
+## What was implemented
 
-## Commits
-- `1f27754` feat: create ResidentsPage with CRUD, filters, and form panel
+1. **Created `src/api/blotter.ts`** — Full CRUD API for the `blotter_records` collection:
+   - `getBlotters()` — fetch all, sorted by `-incident_date`
+   - `getBlotter(id)` — fetch single
+   - `createBlotter(data)` — create with activity logging
+   - `updateBlotter(id, data)` — update with activity logging
+   - `deleteBlotter(id)` — delete with activity logging
+   - `getNextCaseNumber()` — auto-generate `BLT-{year}-{seq}` (e.g., `BLT-2026-001`)
+   - `getBlottersSummary()` — counts by status for dashboard use
+   - Interfaces: `BlotterData` (input), `ApiBlotter` (response extending RecordModel)
 
-## Files Created
-- `src/features/residents/ResidentsPage.tsx` — full page component (520 lines)
-- `src/features/residents/index.ts` — barrel export
+2. **Rewrote `src/features/records/RecordsPage.tsx`** — Complete blotter case management page following ResidentsPage pattern:
+   - Table columns: Case #, Complainant, Respondent, Incident Type, Status (badge), Date, Actions
+   - Filter bar: text search (case # or names), status dropdown, incident type dropdown
+   - Slide-over form panel with 4 fieldset sections:
+     - **Case Info**: auto-generated case_number (read-only), incident_type (select), incident_date, incident_location
+     - **Parties**: complainant_name* (required), complainant_contact, respondent_name, respondent_contact
+     - **Details**: narrative (textarea), involved_parties (textarea)
+     - **Resolution**: status (select), action_taken (textarea — shown when status is settled/escalated)
+   - Status badge colors: pending=amber, hearing=blue, settled=emerald, escalated=orange, dismissed=red
+   - Case number auto-generated on create (fetched via `getNextCaseNumber`)
+   - Role-gated CRUD (admin/staff only; viewer read-only)
+   - Empty state: "No blotter cases yet."
+   - Loading skeleton, error handling, ConfirmDialog for delete
 
-## Verification
-- `npm run build` passed — `tsc -b && vite build` succeeded with no errors (1865 modules transformed, built in 687ms)
+3. **Deleted `src/api/records.ts`** — The old records API is replaced by blotter.ts.
 
-## Notes
-- Follows the same pattern as `RecordsPage`: PageHeader, filter bar, Card + table, slide-over/bottom-drawer form panel, ConfirmDialog for delete
-- Age auto-computed from `birth_date` via `calculateAge()` helper
-- Tag filter buttons (Voter, 4Ps, Senior, PWD) in both filter bar and form panel
-- Purok filter uses hardcoded fallback: `['Purok 1', 'Purok 2', 'Purok 3', 'Purok 4', 'Purok 5', 'Purok 6', 'Purok 7']`
-- Role gating with `hasRole('admin', 'staff')` for create/edit/delete
-- Filter bar: search input (name), purok dropdown, tag toggle buttons
-- Table columns: Name, Purok, Age, Civil Status, Tags (colored badges), Actions
-- Form panel: 9 field sections as specified in the brief
-- Handles empty state (no residents at all) and filter-empty state (no matching residents) separately
+## Build result
+
+**FAILED** — Expected. The Dashboard (`src/pages/Dashboard.tsx`) still imports `getRecords`, `getRecordsSummary`, and `ApiRecord` from `@/api/records`. The task brief explicitly noted this: "Don't worry about that — Task 6 will update the Dashboard." The build will pass once Task 6 updates the Dashboard to use `@/api/blotter`.
+
+## Files changed
+
+| File | Action |
+|------|--------|
+| `src/api/blotter.ts` | Created (new API module) |
+| `src/features/records/RecordsPage.tsx` | Rewritten (full blotter management) |
+| `src/api/records.ts` | Deleted (replaced by blotter.ts) |
+
+## Self-review findings
+
+- All form fields match the spec and migration schema
+- `action_taken` conditionally appears for `settled` and `escalated` statuses only
+- `case_number` is read-only in the form (auto-generated)
+- The complainant_name field is required
+- Status badges use the specified color scheme
+- The page follows the ResidentsPage pattern closely: same filter bar layout, same table structure, same slide-over panel pattern, same ConfirmDialog
+- The `getBlottersSummary()` function returns the new status set (pending, hearing, settled, escalated, dismissed) matching the migration; the old `getRecordsSummary()` returned (pending, approved, rejected)
+
+## Issues or concerns
+
+- **Build break**: The Dashboard (Task 6) must be updated to import from `@/api/blotter` instead of `@/api/records`. The Dashboard uses `getRecords()`, `getRecordsSummary()`, and `ApiRecord` — these need to be mapped to `getBlotters()`, `getBlottersSummary()`, and `ApiBlotter`, with the `statusConfig` updated to match the new status values.

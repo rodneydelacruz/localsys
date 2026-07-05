@@ -1,44 +1,38 @@
-### Task 1: PocketBase Migration JSON
+### Task 1: PocketBase migration JSON
 
 **Files:**
-- Create: `pocketbase/migrations/001_residents_households.json`
+- Create: `pocketbase/migrations/003_blotter_activity_visitors.json`
 
 **Interfaces:**
-- Produces: Collection definitions that the API layer (Task 2) depends on for `residents` and `households` collection names and field names.
+- Produces: `blotter_records`, `activity_logs`, `visitor_logs` collections
 
 - [ ] **Step 1: Create migration JSON**
 
 ```json
 [
   {
-    "name": "residents",
+    "name": "blotter_records",
     "type": "base",
     "system": false,
     "schema": [
-      { "name": "first_name", "type": "text", "required": true, "options": { "max": 255 } },
-      { "name": "last_name", "type": "text", "required": true, "options": { "max": 255 } },
-      { "name": "middle_name", "type": "text", "options": { "max": 255 } },
-      { "name": "suffix", "type": "select", "options": { "values": ["\u2014", "Jr.", "Sr.", "II", "III", "IV"] } },
-      { "name": "birth_date", "type": "date" },
-      { "name": "age", "type": "number" },
-      { "name": "gender", "type": "select", "options": { "values": ["male", "female"] } },
-      { "name": "contact_number", "type": "text", "options": { "max": 20 } },
-      { "name": "household_id", "type": "relation", "options": { "collectionId": "households", "maxSelect": 1 } },
-      { "name": "purok", "type": "text", "options": { "max": 100 } },
-      { "name": "civil_status", "type": "select", "options": { "values": ["single", "married", "widowed", "separated"] } },
-      { "name": "occupation", "type": "text", "options": { "max": 255 } },
-      { "name": "nationality", "type": "text", "options": { "max": 100 } },
-      { "name": "is_voter", "type": "bool" },
-      { "name": "is_4ps", "type": "bool" },
-      { "name": "is_senior", "type": "bool" },
-      { "name": "is_pwd", "type": "bool" },
-      { "name": "blood_type", "type": "select", "options": { "values": ["\u2014", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] } },
-      { "name": "notes", "type": "text", "options": { "max": 2000 } }
+      { "name": "case_number", "type": "text", "required": true, "options": { "max": 20 } },
+      { "name": "incident_type", "type": "select", "required": true, "options": { "values": ["blotter", "complaint", "dispute", "other"] } },
+      { "name": "complainant_name", "type": "text", "required": true, "options": { "max": 255 } },
+      { "name": "complainant_contact", "type": "text", "options": { "max": 20 } },
+      { "name": "respondent_name", "type": "text", "options": { "max": 255 } },
+      { "name": "respondent_contact", "type": "text", "options": { "max": 20 } },
+      { "name": "incident_date", "type": "date" },
+      { "name": "incident_location", "type": "text", "options": { "max": 500 } },
+      { "name": "narrative", "type": "text", "options": { "max": 5000 } },
+      { "name": "status", "type": "select", "required": true, "options": { "values": ["pending", "hearing", "settled", "escalated", "dismissed"] } },
+      { "name": "action_taken", "type": "text", "options": { "max": 2000 } },
+      { "name": "involved_parties", "type": "text", "options": { "max": 2000 } },
+      { "name": "created_by", "type": "relation", "options": { "collectionId": "", "maxSelect": 1 } }
     ],
     "indexes": [
-      "CREATE INDEX idx_residents_name ON residents (last_name, first_name)",
-      "CREATE INDEX idx_residents_purok ON residents (purok)",
-      "CREATE INDEX idx_residents_household ON residents (household_id)"
+      "CREATE UNIQUE INDEX idx_blotter_case_number ON blotter_records (case_number)",
+      "CREATE INDEX idx_blotter_status ON blotter_records (status)",
+      "CREATE INDEX idx_blotter_date ON blotter_records (incident_date)"
     ],
     "listRule": "@request.auth.id != ''",
     "viewRule": "@request.auth.id != ''",
@@ -47,19 +41,42 @@
     "deleteRule": "@request.auth.role = 'admin' || @request.auth.role = 'staff'"
   },
   {
-    "name": "households",
+    "name": "activity_logs",
     "type": "base",
     "system": false,
     "schema": [
-      { "name": "household_number", "type": "text", "required": true, "options": { "max": 50 } },
-      { "name": "purok", "type": "text", "options": { "max": 100 } },
-      { "name": "head_name", "type": "text", "required": true, "options": { "max": 255 } },
-      { "name": "address", "type": "text", "options": { "max": 500 } },
-      { "name": "notes", "type": "text", "options": { "max": 2000 } }
+      { "name": "action", "type": "text", "required": true, "options": { "max": 20 } },
+      { "name": "collection", "type": "text", "required": true, "options": { "max": 50 } },
+      { "name": "record_id", "type": "text", "options": { "max": 50 } },
+      { "name": "details", "type": "text", "options": { "max": 2000 } },
+      { "name": "user_name", "type": "text", "options": { "max": 255 } },
+      { "name": "created", "type": "autodate", "options": { "when": "create" } }
     ],
     "indexes": [
-      "CREATE UNIQUE INDEX idx_households_number ON households (household_number)",
-      "CREATE INDEX idx_households_purok ON households (purok)"
+      "CREATE INDEX idx_activity_created ON activity_logs (created)",
+      "CREATE INDEX idx_activity_collection ON activity_logs (collection)"
+    ],
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": null,
+    "deleteRule": null
+  },
+  {
+    "name": "visitor_logs",
+    "type": "base",
+    "system": false,
+    "schema": [
+      { "name": "visitor_name", "type": "text", "required": true, "options": { "max": 255 } },
+      { "name": "contact_number", "type": "text", "options": { "max": 20 } },
+      { "name": "purpose", "type": "text", "required": true, "options": { "max": 2000 } },
+      { "name": "person_to_visit", "type": "text", "options": { "max": 255 } },
+      { "name": "time_in", "type": "autodate", "options": { "when": "create" } },
+      { "name": "time_out", "type": "date" }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_visitor_time_in ON visitor_logs (time_in)",
+      "CREATE INDEX idx_visitor_time_out ON visitor_logs (time_out)"
     ],
     "listRule": "@request.auth.id != ''",
     "viewRule": "@request.auth.id != ''",
@@ -70,6 +87,5 @@
 ]
 ```
 
-- [ ] **Step 2: Create the directory if needed, then save the file**
+---
 
-Make sure the directory `pocketbase/migrations` exists, then write the JSON.

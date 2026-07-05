@@ -399,7 +399,7 @@ export default function ResidentsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="panel-age">Age</Label>
-                  <Input id="panel-age" value={age || ''} readOnly className="bg-muted" />
+                  <Input id="panel-age" type="number" value={age || ''} onChange={(e) => setAge(Number(e.target.value))} />
                 </div>
               </div>
 

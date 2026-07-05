@@ -1,35 +1,23 @@
-# Final Review Fix Report
+# Fix Report — Group A (Resident Profiles & Household Mapping)
 
-## C1 — Dashboard Recent Activity timeline
-- Imported `getRecords` from `@/api/records`
-- Added `recentRecords` state (`ApiRecord[]`)
-- Fetches last 5 records and renders them as a compact timeline list with title, status badge, `FileText` icon, and date
-- Added `statusConfig` to Dashboard for status badge rendering
+**Status:** DONE
 
-## C2 — RecordsPage staggered row entry
-- Removed `motion-stagger-50` from `<table>` className
-- Existing `motion-fade-in motion-slide-up` on `<tr>` elements with inline `--stagger-index` work correctly
+## Commits
+- `1ab56ba` — `fix: address review findings — gender/civil_status casing, suffix select, defaults, filters, error handling`
 
-## C3 — RecordsPage sortable columns
-- Added `sortBy` ('title' | 'status' | 'updated') and `sortDir` ('asc' | 'desc') state
-- Added `handleSort` click handler on `<th>` elements that toggles direction on same column, resets to asc on new column
-- Added `useMemo`-driven `sortedRecords` that sorts by the active column/direction
-- Added `ChevronUp`/`ChevronDown` indicator on active sort column header
+## Build Verification
+- `npm run build` — passed (tsc + vite build, 0 errors)
 
-## C4 — RecordsPage striped rows
-- Added `even:bg-muted/20` to `<tr>` className for alternating row colors
+## Summary of Fixes
 
-## I5 — RecordsPage error handling on CRUD
-- Added `error` state (`string | null`)
-- Set error message in catch blocks for create, update, and delete operations
-- Displayed error banner inside the slide-over panel for create/edit
-- Error state cleared when opening/closing panels
-
-## I6 — Dashboard silent catch on stats fetch
-- Changed `.catch(() => {})` to `.catch((err) => { console.error(err); setStats({ total: 0, pending: 0, approved: 0, rejected: 0 }) })`
-
-## M10 — RecordsPage redundant classes
-- Changed `className="p-0 sm:p-0"` to `className="p-0"`
-
-## Build Result
-- `npm run build` passes with zero errors.
+| # | Issue | File(s) | Change |
+|---|-------|---------|--------|
+| 1 | Gender values mismatch | `ResidentsPage.tsx:403-404` | Changed `value="Male"/"Female"` → `value="male"/"female"`, labels kept as "Male"/"Female" |
+| 2 | Civil status mismatch | `ResidentsPage.tsx:427-432` | Changed values to lowercase (`single`, `married`, `widowed`, `separated`), removed "Divorced" option |
+| 3 | Suffix field type | `ResidentsPage.tsx:382-393` | Replaced `<Input>` with `<Select>` using values `["—", "Jr.", "Sr.", "II", "III", "IV"]` |
+| 4 | Nationality default | `ResidentsPage.tsx:53` | Changed `nationality: ''` → `nationality: 'Filipino'` |
+| 5 | Blood type missing "—" | `ResidentsPage.tsx:456` | Added `<option value="—">—</option>` as first option |
+| 6 | Empty state text | `ResidentsPage.tsx:257`, `HouseholdsPage.tsx:205` | "No residents found." → "No residents yet. Add your first resident." / "No households found." → "No households yet." |
+| 7 | HouseholdsPage missing purok filter | `HouseholdsPage.tsx:56,186-196` | Added `purokFilter` state + `<Select>` dropdown + filter logic in `filteredHouseholds` |
+| 8 | Error handling in data fetch | `ResidentsPage.tsx:79`, `HouseholdsPage.tsx:81` | Changed `.catch(console.error)` → `.catch((err) => setError(...))` |
+| 9 | Safe filter query | `src/api/residents.ts:56` | Added `.trim()` guard to `household_id` interpolation |
