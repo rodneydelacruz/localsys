@@ -9,6 +9,9 @@ import { HouseholdsPage } from '@/features/households'
 import { DocumentsPage, ReleasePage } from '@/features/documents'
 import { SystemSettings } from '@/features/settings'
 import { ActivityPage, VisitorLogPage } from '@/features/logs'
+import { AssetsPage } from '@/features/assets'
+import { CalendarPage } from '@/features/calendar'
+import { AgendaPage } from '@/features/agenda'
 
 export default function AppRoutes() {
   return (
@@ -83,6 +86,28 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute roles={['admin', 'staff']}>
               <VisitorLogPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="assets"
+          element={
+            <ProtectedRoute roles={['admin']}>
+              <AssetsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="calendar"
+          element={
+            <CalendarPage />
+          }
+        />
+        <Route
+          path="agenda"
+          element={
+            <ProtectedRoute roles={['admin', 'staff']}>
+              <AgendaPage />
             </ProtectedRoute>
           }
         />

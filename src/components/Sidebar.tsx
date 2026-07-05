@@ -13,6 +13,8 @@ import {
   CheckSquare,
   ClipboardCheck,
   DoorOpen,
+  Package,
+  Calendar,
 } from 'lucide-react'
 import { getCurrentUser, logout, type Role } from '@/auth/session'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -62,8 +64,16 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     ],
   },
   {
+    label: 'Planning',
+    items: [
+      { to: '/calendar', label: 'Calendar', icon: Calendar, roles: ['admin', 'staff', 'viewer'] },
+      { to: '/agenda', label: 'Agenda & Minutes', icon: FileText, roles: ['admin', 'staff'] },
+    ],
+  },
+  {
     label: 'Administration',
     items: [
+      { to: '/assets', label: 'Assets', icon: Package, roles: ['admin'] },
       { to: '/settings', label: 'System Settings', icon: Settings, roles: ['admin'] },
     ],
   },
