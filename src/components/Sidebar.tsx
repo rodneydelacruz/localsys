@@ -44,7 +44,9 @@ const navGroups: { label: string; items: NavItem[] }[] = [
 ]
 
 function ActiveDot() {
-  return <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-[#C9953E] dark:bg-[#D4A84B]" />
+  return (
+    <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-gold transition-all duration-200" />
+  )
 }
 
 interface SidebarProps {
@@ -66,11 +68,11 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
 
   useEffect(() => {
     if (mobileOpen) {
-      document.body.style.overflow = 'hidden'
+      document.documentElement.classList.add('overflow-hidden')
     } else {
-      document.body.style.overflow = ''
+      document.documentElement.classList.remove('overflow-hidden')
     }
-    return () => { document.body.style.overflow = '' }
+    return () => { document.documentElement.classList.remove('overflow-hidden') }
   }, [mobileOpen])
 
   function handleLogout() {
@@ -205,44 +207,27 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
                 'flex',
                 pinned ? 'items-center gap-2' : 'flex-col items-center gap-1',
               )}>
-                {pinned ? (
-                  <>
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
-                      {(user.name ?? user.email).charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-foreground">{user.name ?? user.email}</p>
-                      <p className="truncate text-[11px] text-muted-foreground capitalize">{user.role}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-destructive"
-                      aria-label="Logout"
-                      title="Logout"
-                    >
-                      <LogOut className="size-4" />
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div
-                      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground"
-                      title={user.name ?? user.email}
-                    >
-                      {(user.name ?? user.email).charAt(0).toUpperCase()}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-destructive"
-                      aria-label="Logout"
-                      title="Logout"
-                    >
-                      <LogOut className="size-4" />
-                    </button>
-                  </>
+                <div
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground"
+                  title={user.name ?? user.email}
+                >
+                  {(user.name ?? user.email).charAt(0).toUpperCase()}
+                </div>
+                {pinned && (
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground">{user.name ?? user.email}</p>
+                    <p className="truncate text-[11px] text-muted-foreground capitalize">{user.role}</p>
+                  </div>
                 )}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-destructive"
+                  aria-label="Logout"
+                  title="Logout"
+                >
+                  <LogOut className="size-4" />
+                </button>
               </div>
             )}
           </div>
@@ -251,7 +236,7 @@ export default function Sidebar({ pinned, onTogglePin }: SidebarProps) {
 
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/40 md:hidden"
+          className="fixed inset-0 z-30 bg-black/40 motion-fade-in md:hidden"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />

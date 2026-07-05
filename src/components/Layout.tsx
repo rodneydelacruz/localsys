@@ -21,15 +21,10 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="grid min-h-screen grid-cols-[auto_1fr]">
       <Sidebar pinned={pinned} onTogglePin={togglePinned} />
-      <div
-        className="hidden md:block shrink-0 transition-all duration-200"
-        style={{ width: pinned ? '15rem' : '4rem' }}
-        aria-hidden="true"
-      />
-      <main className="flex min-w-0 flex-1 flex-col">
-        <div key={location.pathname} className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 animate-page-enter">
+      <main className="flex min-w-0 flex-col">
+        <div key={location.pathname} className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 lg:p-8 motion-fade-in motion-slide-up">
           <Outlet />
         </div>
         <OfflineIndicator />
