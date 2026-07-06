@@ -118,36 +118,4 @@ jobs:
         run: npm audit --audit-level=high
         continue-on-error: true
 
-  deploy-production:
-    name: Deploy Production
-    runs-on: [self-hosted, windows]
-    needs: [security]
-    if: github.ref_name == 'main' && github.event_name == 'push'
-    environment:
-      name: production
-      url: https://records.barangay.gov.ph
-    steps:
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - name: Deploy to server
-        shell: powershell
-        run: |
-          $ErrorActionPreference = "Stop"
-          $ProdPublic = "D:\BARANGAYCC\barangay-system\pb_public"
-          Write-Host "Copying built artifacts to pb_public..."
-          Copy-Item -Path "dist\*" -Destination "$ProdPublic" -Recurse -Force
-          Write-Host "Restarting PocketBase..."
-          Restart-Service -Name PocketBase -Force
-      - name: Health check
-        shell: powershell
-        run: |
-          Start-Sleep -Seconds 5
-          $response = Invoke-RestMethod -Uri "http://localhost:8090/api/health" -ErrorAction SilentlyContinue
-          if ($response.code -ne 200) {
-            Write-Error "Health check failed: $($response | ConvertTo-Json)"
-            exit 1
-          }
-          Write-Host "PocketBase is healthy."
+  # Deploy is done manually — see scripts/deploy-prod.ps1
