@@ -327,9 +327,10 @@ export default function AgendaPage() {
 
   const isAdmin = hasRole('admin')
 
-  if (selectedMeeting) {
-    return (
-      <>
+  return (
+    <>
+      {selectedMeeting ? (
+        <>
         <div className="mb-6 motion-fade-in">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted-foreground">{fmtDate(selectedMeeting.meeting_date)}</span>
@@ -489,111 +490,10 @@ export default function AgendaPage() {
           </CardContent>
         </Card>
 
-        {itemPanelOpen && (
-          <div className="fixed inset-0 z-40 flex max-md:flex-col max-md:justify-end md:justify-end">
-            <div className="fixed inset-0 bg-black/40 motion-fade-in" onClick={closeItemPanel} aria-hidden="true" />
-            <div className="relative w-full bg-card shadow-xl motion-slide-up motion-fade-in overflow-y-auto md:max-w-md md:border-l md:border-border max-md:max-h-[85vh] max-md:rounded-t-2xl">
-              <div className="flex items-center justify-between border-b px-5 py-4">
-                <h2 className="text-sm font-semibold text-foreground">{editingItemId ? 'Edit Agenda Item' : 'Add Agenda Item'}</h2>
-                <button
-                  type="button"
-                  onClick={closeItemPanel}
-                  className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-                  aria-label="Close"
-                >
-                  <ChevronDown className="size-4" />
-                </button>
-              </div>
-              <form onSubmit={handleItemSubmit} className="space-y-5 p-5">
-                {error && (
-                  <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</div>
-                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="panel-item-title">Title *</Label>
-                  <Input
-                    id="panel-item-title"
-                    value={itemForm.title}
-                    onChange={(e) => updateItemField('title', e.target.value)}
-                    placeholder="Item title"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="panel-item-description">Description</Label>
-                  <textarea
-                    id="panel-item-description"
-                    value={itemForm.description}
-                    onChange={(e) => updateItemField('description', e.target.value)}
-                    rows={3}
-                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Describe the agenda item..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="panel-item-sort">Sort Order</Label>
-                    <Input
-                      id="panel-item-sort"
-                      type="number"
-                      min={0}
-                      value={itemForm.sort_order}
-                      onChange={(e) => updateItemField('sort_order', parseInt(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="panel-item-status">Status</Label>
-                    <Select
-                      id="panel-item-status"
-                      value={itemForm.status}
-                      onValueChange={(v) => updateItemField('status', v)}
-                    >
-                      {agendaStatusOptions.map((s) => (
-                        <option key={s} value={s}>{agendaStatusLabels[s]}</option>
-                      ))}
-                    </Select>
-                  </div>
-                </div>
-
-                {selectedMeeting?.status !== 'scheduled' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="panel-item-minutes">Minutes</Label>
-                    <textarea
-                      id="panel-item-minutes"
-                      value={itemForm.minutes}
-                      onChange={(e) => updateItemField('minutes', e.target.value)}
-                      rows={4}
-                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Meeting minutes..."
-                    />
-                  </div>
-                )}
-
-                <div className="flex gap-2 pt-2">
-                  <Button type="submit">{editingItemId ? 'Update' : 'Add Item'}</Button>
-                  <Button type="button" variant="outline" onClick={closeItemPanel}>Cancel</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <ConfirmDialog
-          open={deletingItemId !== null}
-          title="Delete agenda item"
-          message="This action cannot be undone. The agenda item will be permanently removed."
-          confirmLabel="Delete"
-          destructive
-          onConfirm={confirmDeleteItem}
-          onCancel={() => setDeletingItemId(null)}
-        />
       </>
-    )
-  }
-
-  return (
-    <>
+    ) : (
+      <>
       <PageHeader title="Meetings & Agenda" subtitle="Manage barangay meetings, agenda items, and minutes.">
         {isAdmin && (
           <Button size="sm" className="gap-1.5 motion-press" onClick={openCreateMeetingPanel}>
@@ -642,9 +542,6 @@ export default function AgendaPage() {
                   <div className="h-4 w-24 animate-pulse rounded bg-muted" />
                   <div className="h-5 w-16 animate-pulse rounded-full bg-muted" />
                   <div className="h-5 w-20 animate-pulse rounded-full bg-muted" />
-                  <div className="h-4 w-16 animate-pulse rounded bg-muted" />
-                  <div className="h-4 w-20 animate-pulse rounded bg-muted" />
-                  <div className="h-8 w-14 animate-pulse rounded bg-muted" />
                 </div>
               ))}
             </div>
@@ -667,9 +564,7 @@ export default function AgendaPage() {
                     <th className="hidden px-4 py-3 sm:table-cell sm:px-6">Date</th>
                     <th className="px-4 py-3 sm:px-6">Type</th>
                     <th className="px-4 py-3 sm:px-6">Status</th>
-                    <th className="hidden px-4 py-3 sm:table-cell sm:px-6 text-center">Items</th>
-                    <th className="hidden px-4 py-3 sm:table-cell sm:px-6">Minutes</th>
-                    <th className="px-4 py-3 sm:px-6 text-right">Actions</th>
+
                   </tr>
                 </thead>
                 <tbody className={filteredMeetings.length === 0 ? 'hidden' : ''}>
@@ -696,36 +591,7 @@ export default function AgendaPage() {
                           {statusLabels[m.status]}
                         </span>
                       </td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 sm:table-cell sm:px-6 text-center text-sm text-muted-foreground">
-                        {m.expand?.agendaItems?.length ?? '\u2014'}
-                      </td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 sm:table-cell sm:px-6 text-sm text-muted-foreground">
-                        {'\u2014'}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 sm:px-6 text-right">
-                        {isAdmin && (
-                          <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="size-7 p-0"
-                              onClick={() => openEditMeetingPanel(m)}
-                              aria-label="Edit"
-                            >
-                              <Pencil className="size-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="size-7 p-0 text-muted-foreground hover:text-destructive"
-                              onClick={() => handleDeleteMeeting(m.id)}
-                              aria-label="Delete"
-                            >
-                              <Trash2 className="size-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -740,115 +606,218 @@ export default function AgendaPage() {
         </CardContent>
       </Card>
 
-      {meetingPanelOpen && (
-        <div className="fixed inset-0 z-40 flex max-md:flex-col max-md:justify-end md:justify-end">
-          <div className="fixed inset-0 bg-black/40 motion-fade-in" onClick={closeMeetingPanel} aria-hidden="true" />
-          <div className="relative w-full bg-card shadow-xl motion-slide-up motion-fade-in overflow-y-auto md:max-w-md md:border-l md:border-border max-md:max-h-[85vh] max-md:rounded-t-2xl">
-            <div className="flex items-center justify-between border-b px-5 py-4">
-              <h2 className="text-sm font-semibold text-foreground">{editingMeetingId ? 'Edit Meeting' : 'New Meeting'}</h2>
-              <button
-                type="button"
-                onClick={closeMeetingPanel}
-                className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-                aria-label="Close"
-              >
-                <ChevronDown className="size-4" />
-              </button>
-            </div>
-            <form onSubmit={handleMeetingSubmit} className="space-y-5 p-5">
-              {error && (
-                <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="panel-title">Title *</Label>
-                <Input
-                  id="panel-title"
-                  value={meetingForm.title}
-                  onChange={(e) => updateMeetingField('title', e.target.value)}
-                  placeholder="Meeting title"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="panel-date">Date *</Label>
-                  <Input
-                    id="panel-date"
-                    type="date"
-                    value={meetingForm.meeting_date}
-                    onChange={(e) => updateMeetingField('meeting_date', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="panel-location">Location</Label>
-                  <Input
-                    id="panel-location"
-                    value={meetingForm.location ?? ''}
-                    onChange={(e) => updateMeetingField('location', e.target.value)}
-                    placeholder="Venue"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="panel-type">Type *</Label>
-                  <Select
-                    id="panel-type"
-                    value={meetingForm.meeting_type}
-                    onValueChange={(v) => updateMeetingField('meeting_type', v)}
-                  >
-                    <option value="">Select type</option>
-                    {meetingTypeOptions.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="panel-status">Status</Label>
-                  <Select
-                    id="panel-status"
-                    value={meetingForm.status}
-                    onValueChange={(v) => updateMeetingField('status', v)}
-                  >
-                    {statusOptions.map((s) => (
-                      <option key={s} value={s}>{statusLabels[s]}</option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="panel-notes">Notes</Label>
-                <textarea
-                  id="panel-notes"
-                  value={meetingForm.notes ?? ''}
-                  onChange={(e) => updateMeetingField('notes', e.target.value)}
-                  rows={3}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Meeting notes..."
-                />
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button type="submit">{editingMeetingId ? 'Update' : 'Create Meeting'}</Button>
-                <Button type="button" variant="outline" onClick={closeMeetingPanel}>Cancel</Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <ConfirmDialog
-        open={deletingMeetingId !== null}
-        title="Delete meeting"
-        message="This action cannot be undone. The meeting and all its agenda items will be permanently removed."
-        confirmLabel="Delete"
-        destructive
-        onConfirm={confirmDeleteMeeting}
-        onCancel={() => setDeletingMeetingId(null)}
-      />
     </>
+    )}
+
+    {meetingPanelOpen && (
+      <div className="fixed inset-0 z-40 flex max-md:flex-col max-md:justify-end md:justify-end">
+        <div className="fixed inset-0 bg-black/40 motion-fade-in" onClick={closeMeetingPanel} aria-hidden="true" />
+        <div className="relative w-full bg-card shadow-xl motion-slide-up motion-fade-in overflow-y-auto md:max-w-md md:border-l md:border-border max-md:max-h-[85vh] max-md:rounded-t-2xl">
+          <div className="flex items-center justify-between border-b px-5 py-4">
+            <h2 className="text-sm font-semibold text-foreground">{editingMeetingId ? 'Edit Meeting' : 'New Meeting'}</h2>
+            <button
+              type="button"
+              onClick={closeMeetingPanel}
+              className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+              aria-label="Close"
+            >
+              <ChevronDown className="size-4" />
+            </button>
+          </div>
+          <form onSubmit={handleMeetingSubmit} className="space-y-5 p-5">
+            {error && (
+              <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="panel-title">Title *</Label>
+              <Input
+                id="panel-title"
+                value={meetingForm.title}
+                onChange={(e) => updateMeetingField('title', e.target.value)}
+                placeholder="Meeting title"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="panel-date">Date *</Label>
+                <Input
+                  id="panel-date"
+                  type="date"
+                  value={meetingForm.meeting_date}
+                  onChange={(e) => updateMeetingField('meeting_date', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="panel-location">Location</Label>
+                <Input
+                  id="panel-location"
+                  value={meetingForm.location ?? ''}
+                  onChange={(e) => updateMeetingField('location', e.target.value)}
+                  placeholder="Venue"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="panel-type">Type *</Label>
+                <Select
+                  id="panel-type"
+                  value={meetingForm.meeting_type}
+                  onValueChange={(v) => updateMeetingField('meeting_type', v)}
+                >
+                  <option value="">Select type</option>
+                  {meetingTypeOptions.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="panel-status">Status</Label>
+                <Select
+                  id="panel-status"
+                  value={meetingForm.status}
+                  onValueChange={(v) => updateMeetingField('status', v)}
+                >
+                  {statusOptions.map((s) => (
+                    <option key={s} value={s}>{statusLabels[s]}</option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="panel-notes">Notes</Label>
+              <textarea
+                id="panel-notes"
+                value={meetingForm.notes ?? ''}
+                onChange={(e) => updateMeetingField('notes', e.target.value)}
+                rows={3}
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Meeting notes..."
+              />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button type="submit">{editingMeetingId ? 'Update' : 'Create Meeting'}</Button>
+              <Button type="button" variant="outline" onClick={closeMeetingPanel}>Cancel</Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+    <ConfirmDialog
+      open={deletingMeetingId !== null}
+      title="Delete meeting"
+      message="This action cannot be undone. The meeting and all its agenda items will be permanently removed."
+      confirmLabel="Delete"
+      destructive
+      onConfirm={confirmDeleteMeeting}
+      onCancel={() => setDeletingMeetingId(null)}
+    />
+
+    {itemPanelOpen && (
+      <div className="fixed inset-0 z-40 flex max-md:flex-col max-md:justify-end md:justify-end">
+        <div className="fixed inset-0 bg-black/40 motion-fade-in" onClick={closeItemPanel} aria-hidden="true" />
+        <div className="relative w-full bg-card shadow-xl motion-slide-up motion-fade-in overflow-y-auto md:max-w-md md:border-l md:border-border max-md:max-h-[85vh] max-md:rounded-t-2xl">
+          <div className="flex items-center justify-between border-b px-5 py-4">
+            <h2 className="text-sm font-semibold text-foreground">{editingItemId ? 'Edit Agenda Item' : 'Add Agenda Item'}</h2>
+            <button
+              type="button"
+              onClick={closeItemPanel}
+              className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+              aria-label="Close"
+            >
+              <ChevronDown className="size-4" />
+            </button>
+          </div>
+          <form onSubmit={handleItemSubmit} className="space-y-5 p-5">
+            {error && (
+              <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="panel-item-title">Title *</Label>
+              <Input
+                id="panel-item-title"
+                value={itemForm.title}
+                onChange={(e) => updateItemField('title', e.target.value)}
+                placeholder="Item title"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="panel-item-description">Description</Label>
+              <textarea
+                id="panel-item-description"
+                value={itemForm.description}
+                onChange={(e) => updateItemField('description', e.target.value)}
+                rows={3}
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Describe the agenda item..."
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="panel-item-sort">Sort Order</Label>
+                <Input
+                  id="panel-item-sort"
+                  type="number"
+                  min={0}
+                  value={itemForm.sort_order}
+                  onChange={(e) => updateItemField('sort_order', parseInt(e.target.value) || 0)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="panel-item-status">Status</Label>
+                <Select
+                  id="panel-item-status"
+                  value={itemForm.status}
+                  onValueChange={(v) => updateItemField('status', v)}
+                >
+                  {agendaStatusOptions.map((s) => (
+                    <option key={s} value={s}>{agendaStatusLabels[s]}</option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+
+            {selectedMeeting?.status !== 'scheduled' && (
+              <div className="space-y-2">
+                <Label htmlFor="panel-item-minutes">Minutes</Label>
+                <textarea
+                  id="panel-item-minutes"
+                  value={itemForm.minutes}
+                  onChange={(e) => updateItemField('minutes', e.target.value)}
+                  rows={4}
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Meeting minutes..."
+                />
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              <Button type="submit">{editingItemId ? 'Update' : 'Add Item'}</Button>
+              <Button type="button" variant="outline" onClick={closeItemPanel}>Cancel</Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+    <ConfirmDialog
+      open={deletingItemId !== null}
+      title="Delete agenda item"
+      message="This action cannot be undone. The agenda item will be permanently removed."
+      confirmLabel="Delete"
+      destructive
+      onConfirm={confirmDeleteItem}
+      onCancel={() => setDeletingItemId(null)}
+    />
+  </>
   )
 }
