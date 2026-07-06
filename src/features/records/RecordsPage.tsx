@@ -17,11 +17,11 @@ import { hasRole } from '@/auth/session'
 import { cn, formatDate, formatDateTime } from '@/lib/utils'
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  pending:   { label: 'Pending',   color: 'text-amber-800', bg: 'bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300' },
-  hearing:   { label: 'Hearing',   color: 'text-blue-800',  bg: 'bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300' },
-  settled:   { label: 'Settled',   color: 'text-emerald-800', bg: 'bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300' },
-  escalated: { label: 'Escalated', color: 'text-orange-800', bg: 'bg-orange-100 dark:bg-orange-900/30 dark:text-orange-300' },
-  dismissed: { label: 'Dismissed', color: 'text-red-800',    bg: 'bg-red-100 dark:bg-red-900/30 dark:text-red-300' },
+  pending:   { label: 'Pending',   color: 'text-amber-900', bg: 'bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300' },
+  hearing:   { label: 'Hearing',   color: 'text-blue-900',  bg: 'bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300' },
+  settled:   { label: 'Settled',   color: 'text-emerald-900', bg: 'bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300' },
+  escalated: { label: 'Escalated', color: 'text-orange-900', bg: 'bg-orange-200 dark:bg-orange-900/30 dark:text-orange-300' },
+  dismissed: { label: 'Dismissed', color: 'text-red-900',    bg: 'bg-red-200 dark:bg-red-900/30 dark:text-red-300' },
 }
 
 const incidentTypeOptions = [
@@ -319,7 +319,7 @@ export default function RecordsPage() {
                           {b.incident_type}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 sm:px-6">
-                          <span className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-xs font-medium', cfg.bg, cfg.color)}>
+                          <span className={cn('inline-flex items-center gap-1.5 rounded-md px-3.5 py-0.5 text-xs font-bold', cfg.bg, cfg.color)}>
                             {cfg.label}
                           </span>
                         </td>
@@ -494,7 +494,7 @@ export default function RecordsPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div><span className="text-muted-foreground">Case #:</span> <span className="font-medium">{flyoutBlotter.case_number}</span></div>
                   <div><span className="text-muted-foreground">Type:</span> <span className="capitalize">{flyoutBlotter.incident_type}</span></div>
-                  <div><span className="text-muted-foreground">Status:</span> <span className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-xs font-medium', cfg.bg, cfg.color)}>{cfg.label}</span></div>
+                  <div><span className="text-muted-foreground">Status:</span> <span className={cn('inline-flex items-center gap-1.5 rounded-md px-3.5 py-0.5 text-xs font-bold', cfg.bg, cfg.color)}>{cfg.label}</span></div>
                   <div><span className="text-muted-foreground">Date:</span> {formatDate(flyoutBlotter.incident_date)}</div>
                   <div className="col-span-2"><span className="text-muted-foreground">Location:</span> {flyoutBlotter.incident_location || '—'}</div>
                 </div>

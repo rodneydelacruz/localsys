@@ -164,7 +164,7 @@ export default function ActivityPage() {
                       <td className="whitespace-nowrap px-4 py-3 sm:px-6">
                         <span
                           className={cn(
-                            'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium',
+                            'inline-flex rounded-md px-3.5 py-0.5 text-xs font-bold',
                             actionColors[a.action] || 'bg-muted text-muted-foreground',
                           )}
                         >
@@ -213,7 +213,7 @@ export default function ActivityPage() {
           <>
             <DetailSection icon={<FileText className="size-3" />} title="Action">
               <div className="grid grid-cols-2 gap-2">
-                <div><span className="text-muted-foreground">Action:</span> <span className={cn('inline-flex rounded-full px-2 py-0.5 text-xs font-medium', actionColors[flyoutActivity.action] || 'bg-muted text-muted-foreground')}>{flyoutActivity.action}</span></div>
+                <div><span className="text-muted-foreground">Action:</span> <span className={cn('inline-flex rounded-md px-3 py-0.5 text-xs font-bold', actionColors[flyoutActivity.action] || 'bg-muted text-muted-foreground')}>{flyoutActivity.action}</span></div>
                 <div><span className="text-muted-foreground">Collection:</span> <span className="capitalize">{flyoutActivity.collection.replace(/_/g, ' ')}</span></div>
               </div>
             </DetailSection>

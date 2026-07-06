@@ -272,7 +272,7 @@ export default function VisitorLogPage() {
                         {v.time_out ? (
                           <span className="text-sm text-muted-foreground">{formatTime(v.time_out)}</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-200 px-3 py-0.5 text-xs font-bold text-emerald-900 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30">
                             <Circle className="size-2 fill-current" />
                             Active
                           </span>
@@ -379,7 +379,7 @@ export default function VisitorLogPage() {
             <DetailSection icon={<Clock className="size-3" />} title="Timeline">
               <div className="grid grid-cols-2 gap-2">
                 <div><span className="text-muted-foreground">Time In:</span> {formatTime(flyoutVisitor.time_in)}</div>
-                <div><span className="text-muted-foreground">Time Out:</span> {flyoutVisitor.time_out ? formatTime(flyoutVisitor.time_out) : <span className={cn('inline-flex items-center gap-1 rounded-full bg-emerald-200 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300')}><Circle className="size-2 fill-current" />Active</span>}</div>
+                <div><span className="text-muted-foreground">Time Out:</span> {flyoutVisitor.time_out ? formatTime(flyoutVisitor.time_out) : <span className={cn('inline-flex items-center gap-1 rounded-md bg-emerald-200 px-3 py-0.5 text-xs font-bold text-emerald-900 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30')}><Circle className="size-2 fill-current" />Active</span>}</div>
               </div>
             </DetailSection>
 

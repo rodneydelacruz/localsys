@@ -22,21 +22,21 @@ import { tagColors } from '@/lib/statusStyles'
 function statusClass(value: string, type: 'document' | 'blotter' | 'activity'): string {
   if (type === 'document') {
     if (value === 'released') return 'bg-muted text-muted-foreground'
-    if (value === 'cancelled') return 'bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/30'
-    if (value === 'for_release') return 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30'
-    if (value === 'processing') return 'bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30'
-    return 'bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/30'
+    if (value === 'cancelled') return 'bg-red-200 text-red-900 border border-red-400 dark:bg-red-900/50 dark:text-red-300 dark:border-red-800/30'
+    if (value === 'for_release') return 'bg-emerald-200 text-emerald-900 border border-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800/30'
+    if (value === 'processing') return 'bg-blue-200 text-blue-900 border border-blue-400 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/30'
+    return 'bg-amber-200 text-amber-900 border border-amber-400 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800/30'
   }
   if (type === 'blotter') {
-    if (value === 'settled') return 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30'
-    if (value === 'hearing') return 'bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30'
-    if (value === 'dismissed') return 'bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/30'
-    if (value === 'escalated') return 'bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/30'
-    return 'bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/30'
+    if (value === 'settled') return 'bg-emerald-200 text-emerald-900 border border-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800/30'
+    if (value === 'hearing') return 'bg-blue-200 text-blue-900 border border-blue-400 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/30'
+    if (value === 'dismissed') return 'bg-red-200 text-red-900 border border-red-400 dark:bg-red-900/50 dark:text-red-300 dark:border-red-800/30'
+    if (value === 'escalated') return 'bg-orange-200 text-orange-900 border border-orange-400 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-800/30'
+    return 'bg-amber-200 text-amber-900 border border-amber-400 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800/30'
   }
-  if (value === 'create') return 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30'
-  if (value === 'update') return 'bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30'
-  return 'bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/30'
+  if (value === 'create') return 'bg-emerald-200 text-emerald-900 border border-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800/30'
+  if (value === 'update') return 'bg-blue-200 text-blue-900 border border-blue-400 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/30'
+  return 'bg-red-200 text-red-900 border border-red-400 dark:bg-red-900/50 dark:text-red-300 dark:border-red-800/30'
 }
 
 function calculateAge(birthDate: string): number {
@@ -417,7 +417,7 @@ export default function ResidentsPage() {
               type="button"
               onClick={() => toggleTagFilter(tag)}
               className={cn(
-                'rounded-md px-2.5 py-0.5 text-xs font-medium transition-colors',
+                'rounded-md px-3.5 py-0.5 text-xs font-bold transition-colors',
                 tagFilter.includes(tag)
                   ? tagColors[tag]
                   : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -486,7 +486,7 @@ export default function ResidentsPage() {
                             (r as Record<string, unknown>)[tag] ? (
                               <span
                                 key={tag}
-                                className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', tagColors[tag])}
+                                className={cn('inline-flex rounded-md px-3 py-0.5 text-xs font-bold', tagColors[tag])}
                               >
                                 {tagLabels[tag]}
                               </span>
@@ -651,7 +651,7 @@ export default function ResidentsPage() {
                       type="button"
                       onClick={() => updateField(tag, !(form as Record<string, unknown>)[tag])}
                       className={cn(
-                        'rounded-md px-3 py-1 text-xs font-medium transition-colors',
+                        'rounded-md px-4 py-1 text-xs font-bold transition-colors',
                         (form as Record<string, unknown>)[tag]
                           ? tagColors[tag]
                           : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -710,7 +710,7 @@ export default function ResidentsPage() {
             <div className="col-span-2 flex gap-1 flex-wrap">
               {tagKeys.map((tag) =>
                 (flyoutResident as Record<string, unknown>)[tag] ? (
-                  <span key={tag} className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', tagColors[tag])}>
+                  <span key={tag} className={cn('inline-flex rounded-md px-3 py-0.5 text-xs font-bold', tagColors[tag])}>
                     {tagLabels[tag]}
                   </span>
                 ) : null,
@@ -741,7 +741,7 @@ export default function ResidentsPage() {
                 <div key={d.id} className="flex items-center justify-between text-sm gap-2">
                   <span className="font-medium shrink-0">#{d.queue_number}</span>
                   <span className="capitalize text-muted-foreground flex-1 truncate">{d.document_type.replace(/_/g, ' ')}</span>
-                  <span className={cn('inline-flex shrink-0 rounded-md px-2 py-0.5 text-xs font-medium', statusClass(d.status, 'document'))}>{d.status.replace(/_/g, ' ')}</span>
+                  <span className={cn('inline-flex shrink-0 rounded-md px-3 py-0.5 text-xs font-bold', statusClass(d.status, 'document'))}>{d.status.replace(/_/g, ' ')}</span>
                 </div>
               ))}
             </div>
@@ -757,7 +757,7 @@ export default function ResidentsPage() {
                 <div key={b.id} className="flex items-center justify-between text-sm gap-2">
                   <span className="font-medium shrink-0">{b.case_number}</span>
                   <span className="text-muted-foreground flex-1 truncate">{b.complainant_name} vs {b.respondent_name || '—'}</span>
-                  <span className={cn('inline-flex shrink-0 rounded-md px-2 py-0.5 text-xs font-medium', statusClass(b.status, 'blotter'))}>{b.status.charAt(0).toUpperCase() + b.status.slice(1)}</span>
+                  <span className={cn('inline-flex shrink-0 rounded-md px-3 py-0.5 text-xs font-bold', statusClass(b.status, 'blotter'))}>{b.status.charAt(0).toUpperCase() + b.status.slice(1)}</span>
                 </div>
               ))}
             </div>
@@ -771,7 +771,7 @@ export default function ResidentsPage() {
             <div className="space-y-1.5 max-h-48 overflow-y-auto">
               {flyoutActivities.map((a) => (
                 <div key={a.id} className="flex items-center justify-between text-sm gap-2">
-                  <span className={cn('inline-flex shrink-0 rounded-md px-2 py-0.5 text-xs font-medium', statusClass(a.action, 'activity'))}>{a.action}</span>
+                  <span className={cn('inline-flex shrink-0 rounded-md px-3 py-0.5 text-xs font-bold', statusClass(a.action, 'activity'))}>{a.action}</span>
                   <span className="flex-1 px-2 text-muted-foreground truncate">{a.details}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(a.created)}</span>
                 </div>

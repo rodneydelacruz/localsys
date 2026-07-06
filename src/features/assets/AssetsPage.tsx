@@ -39,11 +39,11 @@ const conditionLabels: Record<string, string> = {
 }
 
 const conditionColors: Record<string, string> = {
-  new: 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30',
-  good: 'bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30',
-  fair: 'bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/30',
-  poor: 'bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/30',
-  damaged: 'bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/30',
+  new: 'bg-emerald-200 text-emerald-900 border border-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800/30',
+  good: 'bg-blue-200 text-blue-900 border border-blue-400 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/30',
+  fair: 'bg-amber-200 text-amber-900 border border-amber-400 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800/30',
+  poor: 'bg-orange-200 text-orange-900 border border-orange-400 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-800/30',
+  damaged: 'bg-red-200 text-red-900 border border-red-400 dark:bg-red-900/50 dark:text-red-300 dark:border-red-800/30',
   disposed: 'bg-muted text-muted-foreground',
 }
 
@@ -56,8 +56,8 @@ const statusLabels: Record<string, string> = {
 }
 
 const statusColors: Record<string, string> = {
-  available: 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30',
-  assigned: 'bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30',
+  available: 'bg-emerald-200 text-emerald-900 border border-emerald-400 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800/30',
+  assigned: 'bg-blue-200 text-blue-900 border border-blue-400 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/30',
   disposed: 'bg-muted text-muted-foreground',
 }
 
@@ -391,12 +391,12 @@ export default function AssetsPage() {
                         {assetTypeOptions.find((t) => t.value === a.asset_type)?.label || a.asset_type}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 sm:px-6">
-                        <span className={cn('inline-flex rounded-md px-2.5 py-0.5 text-xs font-medium', conditionColors[a.condition])}>
+                        <span className={cn('inline-flex rounded-md px-3.5 py-0.5 text-xs font-bold', conditionColors[a.condition])}>
                           {conditionLabels[a.condition]}
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 sm:px-6">
-                        <span className={cn('inline-flex rounded-md px-2.5 py-0.5 text-xs font-medium', statusColors[a.status ?? ''])}>
+                        <span className={cn('inline-flex rounded-md px-3.5 py-0.5 text-xs font-bold', statusColors[a.status ?? ''])}>
                           {statusLabels[a.status ?? '']}
                         </span>
                       </td>
@@ -648,8 +648,8 @@ export default function AssetsPage() {
                 <div><span className="text-muted-foreground">Name:</span> <span className="font-medium">{flyoutAsset.name}</span></div>
                 <div><span className="text-muted-foreground">Type:</span> {assetTypeOptions.find((t) => t.value === flyoutAsset.asset_type)?.label || flyoutAsset.asset_type}</div>
                 <div><span className="text-muted-foreground">Serial #:</span> {flyoutAsset.serial_number || '—'}</div>
-                <div><span className="text-muted-foreground">Condition:</span> <span className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', conditionColors[flyoutAsset.condition])}>{conditionLabels[flyoutAsset.condition]}</span></div>
-                <div><span className="text-muted-foreground">Status:</span> <span className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', statusColors[flyoutAsset.status ?? ''])}>{statusLabels[flyoutAsset.status ?? '']}</span></div>
+                <div><span className="text-muted-foreground">Condition:</span> <span className={cn('inline-flex rounded-md px-3 py-0.5 text-xs font-bold', conditionColors[flyoutAsset.condition])}>{conditionLabels[flyoutAsset.condition]}</span></div>
+                <div><span className="text-muted-foreground">Status:</span> <span className={cn('inline-flex rounded-md px-3 py-0.5 text-xs font-bold', statusColors[flyoutAsset.status ?? ''])}>{statusLabels[flyoutAsset.status ?? '']}</span></div>
               </div>
             </DetailSection>
 
